@@ -1,4 +1,4 @@
-project(piserver)
+project(efserver)
 cmake_minimum_required(VERSION 3.1)
 
 set (CMAKE_CXX_STANDARD 11)
@@ -56,7 +56,7 @@ target_link_libraries(${PROJECT_NAME} ${GTKMM_LIBRARIES} ${LDAP_LIBRARY}
 
 if (GETTEXT_FOUND)
     file(GLOB LANGUAGES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} po/*.po)
-    GETTEXT_CREATE_TRANSLATIONS(po/piserver.pot ALL ${LANGUAGES})
+    GETTEXT_CREATE_TRANSLATIONS(po/efserver.pot ALL ${LANGUAGES})
     add_definitions(-DLOCALEDIR="/usr/share/locale")
 endif()
 
@@ -67,7 +67,7 @@ include(GlibCompileResourcesSupport)
 
 set(RESOURCE_LIST
     data/firstuse.glade
-    data/piserver.glade
+    data/efserver.glade
     data/addhostdialog.glade
     data/edithostdialog.glade
     data/adduserdialog.glade
@@ -88,13 +88,13 @@ add_custom_target(resource ALL DEPENDS ${RESOURCE_FILE})
 # Installation
 
 install(TARGETS piserver DESTINATION bin)
-install(FILES data/piserver.desktop DESTINATION share/applications)
-install(FILES data/org.raspberrypi.piserver.policy DESTINATION share/polkit-1/actions)
-install(DIRECTORY DESTINATION /var/lib/piserver)
-install(DIRECTORY DESTINATION /var/lib/piserver/os)
-install(DIRECTORY DESTINATION /var/lib/piserver/os/shared)
-install(DIRECTORY DESTINATION /var/lib/piserver/tftproot)
-install(DIRECTORY DESTINATION /var/lib/piserver/scripts)
-install(PROGRAMS scripts/postinstall.sh scripts/convert.sh scripts/chroot_image.sh DESTINATION /var/lib/piserver/scripts)
-install(FILES scripts/convert_chrooted_cmds scripts/mkhomedir-piserver DESTINATION /var/lib/piserver/scripts)
-install(FILES scripts/50-piserver-dhcpcd-hook DESTINATION /lib/dhcpcd/dhcpcd-hooks)
+install(FILES data/efserver.desktop DESTINATION share/applications)
+install(FILES data/org.efscoin.efserver.policy DESTINATION share/polkit-1/actions)
+install(DIRECTORY DESTINATION /var/lib/efserver)
+install(DIRECTORY DESTINATION /var/lib/efserver/os)
+install(DIRECTORY DESTINATION /var/lib/efserver/os/shared)
+install(DIRECTORY DESTINATION /var/lib/efserver/tftproot)
+install(DIRECTORY DESTINATION /var/lib/efserver/scripts)
+install(PROGRAMS scripts/postinstall.sh scripts/convert.sh scripts/chroot_image.sh DESTINATION /var/lib/efserver/scripts)
+install(FILES scripts/convert_chrooted_cmds scripts/mkhomedir-efserver DESTINATION /var/lib/efserver/scripts)
+install(FILES scripts/50-efserver-dhcpcd-hook DESTINATION /lib/dhcpcd/dhcpcd-hooks)
