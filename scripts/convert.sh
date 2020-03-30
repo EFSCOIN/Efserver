@@ -1,12 +1,12 @@
 #!/bin/bash
 #
-# Converts NOOBS style boot.tar.xz and root.tar.xz to image suitable for Piserver
+# Converts NOOBS style boot.tar.xz and root.tar.xz to image suitable for Efserver
 #
 
 set -e
 
 if [ $# -ne 3 ]; then
-    echo $0: script to convert boot.tar.xz/root.tar.xz to image suitable for PiServer
+    echo $0: script to convert boot.tar.xz/root.tar.xz to image suitable for EfServer
     echo
     echo Usage: $0 boot.tar.xz root.tar.xz output.tar.xz
     exit 1
