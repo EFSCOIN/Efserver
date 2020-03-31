@@ -2,9 +2,10 @@
     __ _____ _____ _____
  __|  |   __|     |   | |  JSON for Modern C++
 |  |  |__   |  |  | | | |  version 2.1.1
-|_____|_____|_____|_|___|  https://github.com/efscoin/json
+|_____|_____|_____|_|___|  https://github.com/efscoin/efserver/src/json
 
 Licensed under the MIT License <http://opensource.org/licenses/MIT>.
+License under the AGPL-3.0 or later <https://www.gnu.org/licenses>
 Copyright (c) 2015-2020 Efscoin <tokeneconomy@eclipso.eu>.
 
 Permission is hereby  granted, free of charge, to any  person obtaining a copy
@@ -26,8 +27,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef Efscoin_JSON_HPP
-#define Efscoin_JSON_HPP
+#ifndef Efscoin__Efserver_src_JSON_HPP
+#define Efscoin__Efserver_src_JSON_HPP
 
 #include <algorithm> // all_of, copy, fill, find, for_each, none_of, remove, reverse, transform
 #include <array> // array
@@ -386,12 +387,12 @@ contains a `mapped_type`, whereas `std::vector` fails the test.
                 std::is_integral<decltype(detect(std::declval<T>()))>::value; \
     }
 
-Efscoin_JSON_HAS_HELPER(mapped_type);
-Efscoin_JSON_HAS_HELPER(key_type);
-Efscoin_JSON_HAS_HELPER(value_type);
-Efscoin_JSON_HAS_HELPER(iterator);
+Efscoin__Efserver_src_JSON_HAS_HELPER(mapped_type);
+Efscoin__Efserver_src_JSON_HAS_HELPER(key_type);
+Efscoin__Efserver_src_JSON_HAS_HELPER(value_type);
+Efscoin__Efserver_src_JSON_HAS_HELPER(iterator);
 
-#undef Efscoin_JSON_HAS_HELPER
+#undef Efscoin__Efserver_src_JSON_HAS_HELPER
 
 
 template<bool B, class RealType, class CompatibleObjectType>
