@@ -1,5 +1,5 @@
 #include "host.h"
-#include "piserver.h"
+#include "efserver.h"
 #include <algorithm>
 
 Host::Host(const std::string &m, const std::string &desc, Distribution *distr)
@@ -22,5 +22,5 @@ std::string Host::tftpPath()
     std::string dashedMac = _mac;
     replace(dashedMac.begin(), dashedMac.end(), ':', '-');
 
-    return std::string(PISERVER_TFTPROOT)+"/"+dashedMac;
+    return std::string(EFSERVER_TFTPROOT)+"/"+dashedMac;
 }
