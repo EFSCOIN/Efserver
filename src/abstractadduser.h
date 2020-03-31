@@ -3,12 +3,12 @@
 
 #include <gtkmm.h>
 
-class PiServer;
+class EfServer;
 
 class AbstractAddUser
 {
 protected:
-    AbstractAddUser(PiServer *ps);
+    AbstractAddUser(EfServer *ps);
     void setupAddUserFields(Glib::RefPtr<Gtk::Builder> builder);
     virtual ~AbstractAddUser();
     virtual void setAddUserOkButton() = 0;
@@ -22,7 +22,7 @@ protected:
     std::vector<Gtk::Entry *> _passEntry;
 
 private:
-    PiServer *_ps;
+    EfServer *_ps;
 };
 
 #endif // ABSTRACTADDUSER_H
