@@ -1,5 +1,5 @@
 #include "addfolderdialog.h"
-#include "piserver.h"
+#include "efserver.h"
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <stdlib.h>
@@ -9,7 +9,7 @@
 
 using namespace std;
 
-AddFolderDialog::AddFolderDialog(PiServer *ps, Gtk::Window *parent)
+AddFolderDialog::AddFolderDialog(EfServer *ps, Gtk::Window *parent)
     : _ps(ps)
 {
     auto builder = Gtk::Builder::create_from_resource("/data/addfolderdialog.glade");
@@ -40,7 +40,7 @@ bool AddFolderDialog::exec()
     {
         string name  = _nameEntry->get_text();
         string owner = _ownerEntry->get_text();
-        string path  = PISERVER_SHAREDROOT "/" + name;
+        string path  = EFSERVER_SHAREDROOT "/" + name;
         struct passwd *userinfo;
 
         try
