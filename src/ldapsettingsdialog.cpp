@@ -1,11 +1,11 @@
 #include "ldapsettingsdialog.h"
-#include "piserver.h"
+#include "efserver.h"
 #include <regex>
 #include <strings.h>
 
 using namespace std;
 
-LdapSettingsDialog::LdapSettingsDialog(PiServer *ps, Gtk::Window *parent)
+LdapSettingsDialog::LdapSettingsDialog(EfServer *ps, Gtk::Window *parent)
     : _ps(ps)
 {
     auto builder = Gtk::Builder::create_from_resource("/data/ldapsettingsdialog.glade");
