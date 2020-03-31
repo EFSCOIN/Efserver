@@ -109,15 +109,15 @@ void DependenciesInstallThread::run()
         {
             // Using gnutls's certtool instead of OpenSSL, because it allows setting start date to 1970
             _execCheckResult("certtool --generate-privkey --ecc --outfile /etc/ldap/efserver.key");
-            ofstream os("/etc/ldap/piserver.tpl");
-            os << "cn = \"piserver\"" << endl
+            ofstream os("/etc/ldap/efserver.tpl");
+            os << "cn = \"efserver\"" << endl
                << "tls_www_server" << endl
                << "activation_date=\"1970-01-01 00:00:00 UTC\"" << endl
                << "expiration_days=\"-1\"" << endl;
             os.close();
             _execCheckResult("certtool --generate-self-signed --load-privkey /etc/ldap/efserver.key --template=/etc/ldap/efserver.tpl --outfile=/etc/ssl/certs/efserver.pem");
             _execCheckResult("chown openldap /etc/ldap/efserver.key");
-            if (::unlink("/etc/ldap/piserver.tpl") != 0) { }
+            if (::unlink("/etc/ldap/efserver.tpl") != 0) { }
 
             const char *ldif =
                     "dn: cn=config\n"
