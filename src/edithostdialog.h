@@ -1,19 +1,19 @@
 #ifndef EDITHOSTDIALOG_H
 #define EDITHOSTDIALOG_H
 
-#include "piserver.h"
+#include "efserver.h"
 #include <string>
 #include <gtkmm.h>
 
 class EditHostDialog
 {
 public:
-    EditHostDialog(PiServer *ps, const std::string &mac, Gtk::Window *parent = NULL);
+    EditHostDialog(EfServer *ps, const std::string &mac, Gtk::Window *parent = NULL);
     virtual ~EditHostDialog();
     bool exec();
 
 protected:
-    PiServer *_ps;
+    EfServer *_ps;
     std::string _mac;
     Gtk::Dialog *_dialog;
     Gtk::Label *_maclabel;
