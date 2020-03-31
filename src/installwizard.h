@@ -1,7 +1,7 @@
 #ifndef INSTALLWIZARD_H
 #define INSTALLWIZARD_H
 
-#include "piserver.h"
+#include "efserver.h"
 #include "abstractaddhost.h"
 #include "abstractadduser.h"
 #include "abstractadddistro.h"
@@ -13,7 +13,7 @@ class ActiveDiscovery;
 class InstallWizard : public AbstractAddHost, public AbstractAddUser, public AbstractAddDistro
 {
 public:
-    InstallWizard(Glib::RefPtr<Gtk::Application> app, PiServer *ps);
+    InstallWizard(Glib::RefPtr<Gtk::Application> app, EfServer *ps);
     virtual ~InstallWizard();
     void exec();
 
