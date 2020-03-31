@@ -2,7 +2,7 @@
 
 using namespace std;
 
-AddDistroDialog::AddDistroDialog(MainWindow *mw, PiServer *ps, const std::string &cachedDistroInfo, Gtk::Window *parent)
+AddDistroDialog::AddDistroDialog(MainWindow *mw, EfServer *ps, const std::string &cachedDistroInfo, Gtk::Window *parent)
     : AbstractAddDistro(ps), _mw(mw)
 {
     auto builder = Gtk::Builder::create_from_resource("/data/adddistrodialog.glade");
