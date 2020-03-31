@@ -4,12 +4,12 @@
 #include <gtkmm.h>
 #include "dhcpanalyzer.h"
 #include "stpanalyzer.h"
-#include "piserver.h"
+#include "efserver.h"
 
 class AbstractAddHost : public sigc::trackable
 {
 protected:
-    AbstractAddHost(PiServer *ps);
+    AbstractAddHost(EfServer *ps);
     virtual ~AbstractAddHost();
     void setupAddHostFields(Glib::RefPtr<Gtk::Builder> builder);
     bool addHostFieldsOk();
@@ -27,7 +27,7 @@ protected:
     StpAnalyzer _stpdetect;
 
 private:
-    PiServer *_ps;
+    EfServer *_ps;
 };
 
 #endif // ABSTRACTADDHOST_H
