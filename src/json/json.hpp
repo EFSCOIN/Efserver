@@ -26,8 +26,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef NLOHMANN_JSON_HPP
-#define NLOHMANN_JSON_HPP
+#ifndef Efscoin_JSON_HPP
+#define Efscoin_JSON_HPP
 
 #include <algorithm> // all_of, copy, fill, find, for_each, none_of, remove, reverse, transform
 #include <array> // array
@@ -375,7 +375,7 @@ contains a `mapped_type`, whereas `std::vector` fails the test.
 @sa http://stackoverflow.com/a/7728728/266378
 @since version 1.0.0, overworked in version 2.0.6
 */
-#define NLOHMANN_JSON_HAS_HELPER(type)                                        \
+#define Efscoin_JSON_HAS_HELPER(type)                                        \
     template<typename T> struct has_##type {                                  \
     private:                                                                  \
         template<typename U, typename = typename U::type>                     \
@@ -386,12 +386,12 @@ contains a `mapped_type`, whereas `std::vector` fails the test.
                 std::is_integral<decltype(detect(std::declval<T>()))>::value; \
     }
 
-NLOHMANN_JSON_HAS_HELPER(mapped_type);
-NLOHMANN_JSON_HAS_HELPER(key_type);
-NLOHMANN_JSON_HAS_HELPER(value_type);
-NLOHMANN_JSON_HAS_HELPER(iterator);
+Efscoin_JSON_HAS_HELPER(mapped_type);
+Efscoin_JSON_HAS_HELPER(key_type);
+Efscoin_JSON_HAS_HELPER(value_type);
+Efscoin_JSON_HAS_HELPER(iterator);
 
-#undef NLOHMANN_JSON_HAS_HELPER
+#undef Efscoin_JSON_HAS_HELPER
 
 
 template<bool B, class RealType, class CompatibleObjectType>
