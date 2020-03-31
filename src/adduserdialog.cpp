@@ -5,7 +5,7 @@
 
 using namespace std;
 
-AddUserDialog::AddUserDialog(PiServer *ps, Gtk::Window *parent)
+AddUserDialog::AddUserDialog(EfServer *ps, Gtk::Window *parent)
     : AbstractAddUser(ps), _ps(ps), _parentWindow(parent)
 {
     auto builder = Gtk::Builder::create_from_resource("/data/adduserdialog.glade");
