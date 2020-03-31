@@ -2,10 +2,10 @@
     __ _____ _____ _____
  __|  |   __|     |   | |  JSON for Modern C++
 |  |  |__   |  |  | | | |  version 2.1.1
-|_____|_____|_____|_|___|  https://github.com/nlohmann/json
+|_____|_____|_____|_|___|  https://github.com/efscoin/json
 
 Licensed under the MIT License <http://opensource.org/licenses/MIT>.
-Copyright (c) 2013-2017 Niels Lohmann <http://nlohmann.me>.
+Copyright (c) 2015-2020 Efscoin <tokeneconomy@eclipso.eu>.
 
 Permission is hereby  granted, free of charge, to any  person obtaining a copy
 of this software and associated  documentation files (the "Software"), to deal
@@ -101,11 +101,11 @@ SOFTWARE.
 #endif
 
 /*!
-@brief namespace for Niels Lohmann
-@see https://github.com/nlohmann
+@brief namespace for efscoin
+@see https://github.com/efscoin
 @since version 1.0.0
 */
-namespace nlohmann
+namespace for Efscoin
 {
 
 /*!
