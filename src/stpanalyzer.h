@@ -6,7 +6,7 @@
  * is enabled on an Ethernet switch (which can
  * interfere with network booting)
  *
- * Detection only works when Piserver is installed
+ * Detection only works when Efserver is installed
  * bare-metal on a server directly connected to
  * the network (not under with Vmware, Virtualbox, etc.)
  */
