@@ -1,7 +1,7 @@
 #ifndef EDITUSERDIALOG_H
 #define EDITUSERDIALOG_H
 
-#include "piserver.h"
+#include "efserver.h"
 #include <gtkmm.h>
 
 class EditUserDialog
