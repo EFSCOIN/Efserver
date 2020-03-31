@@ -1,10 +1,10 @@
 #include "abstractadduser.h"
-#include "piserver.h"
+#include "efserver.h"
 #include <set>
 
 using namespace std;
 
-AbstractAddUser::AbstractAddUser(PiServer *ps)
+AbstractAddUser::AbstractAddUser(EfServer *ps)
     : _ps(ps)
 {
 }
