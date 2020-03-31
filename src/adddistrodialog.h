@@ -7,7 +7,7 @@
 class AddDistroDialog : public AbstractAddDistro
 {
 public:
-    AddDistroDialog(MainWindow *mw, PiServer *ps, const std::string &cachedDistroInfo = "", Gtk::Window *parent = NULL);
+    AddDistroDialog(MainWindow *mw, EfServer *ps, const std::string &cachedDistroInfo = "", Gtk::Window *parent = NULL);
     virtual ~AddDistroDialog();
     void show();
     void selectDistro(const std::string &name);
