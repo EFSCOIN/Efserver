@@ -35,8 +35,8 @@ if [ -d /var/lib/lightdm ]; then
 fi
 
 debconf-set-selections <<EOF
-nslcd nslcd/ldap-uris string ldap://piserver
-nslcd nslcd/ldap-base string dc=raspberrypi,dc=local
+nslcd nslcd/ldap-uris string ldap://efserver
+nslcd nslcd/ldap-base string dc=efscoin,dc=local
 libnss-ldapd libnss-ldapd/nsswitch multiselect group, passwd, shadow
 EOF
 
@@ -57,7 +57,7 @@ cat >/etc/security/pam_mount.conf.xml <<EOF
 <!DOCTYPE pam_mount SYSTEM "pam_mount.conf.xml.dtd">
 <pam_mount>
 <debug enable="0" />
-<volume user="*" fstype="fuse" path="%(USER)@piserver:" mountpoint="/home/%(USER)"
+<volume user="*" fstype="fuse" path="%(USER)@efserver:" mountpoint="/home/%(USER)"
         options="port=1022,password_stdin,nonempty,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no,IdentitiesOnly=yes,IdentityFile=/dev/null,ssh_command=ssh -F /dev/null" />
 
 <mntoptions require="nosuid,nodev" />
@@ -102,17 +102,17 @@ fi
 if [ -f /etc/ntp.conf ]; then
     sed -i 's/server /#server /g' /etc/ntp.conf
     echo "# Local network boot server" >> /etc/ntp.conf
-    echo "server piserver iburst" >> /etc/ntp.conf
+    echo "server efserver iburst" >> /etc/ntp.conf
 elif [ -f /etc/systemd/timesyncd.conf ]; then
-    echo "NTP=piserver" >> /etc/systemd/timesyncd.conf
+    echo "NTP=efserver" >> /etc/systemd/timesyncd.conf
 else
-    echo "Warning: unable to find NTP configuration file. Configure it manually to use server 'piserver'"
+    echo "Warning: unable to find NTP configuration file. Configure it manually to use server 'efserver'"
 fi
 
 # dhcpcd: disable link detection as we do not want dhcpcd to tear down interface if cable gets disconnected temporarily
 if [ -f /etc/dhcpcd.conf ]; then
     echo "nolink" >> /etc/dhcpcd.conf
-    echo "# Piserver: disable wifi by default" >> /boot/config.txt
+    echo "# Efserver: disable wifi by default" >> /boot/config.txt
     echo "# If you have a need for wifi, remove both the following line, as well as nolink from /etc/dhcpcd.conf" >> /boot/config.txt
     echo "dtoverlay=pi3-disable-wifi" >> /boot/config.txt
 fi
@@ -141,6 +141,6 @@ delgroup pi
 #
 sed -i '/@include common-auth/a auth       optional   pam_group.so' /etc/pam.d/lightdm
 echo "" >> /etc/security/group.conf
-echo "# Added for Piserver" >> /etc/security/group.conf
+echo "# Added for Efserver" >> /etc/security/group.conf
 echo "lightdm;*;*;Al0000-2400;dialout, audio, video, spi, i2c, gpio, plugdev, input" >> /etc/security/group.conf
 #echo "login;tty*;*;Al0000-2400;dialout, spi, i2c, gpio" >> /etc/security/group.conf
