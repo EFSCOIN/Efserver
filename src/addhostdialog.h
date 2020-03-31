@@ -1,14 +1,14 @@
 #ifndef ADDHOSTWINDOW_H
 #define ADDHOSTWINDOW_H
 
-#include "piserver.h"
+#include "efserver.h"
 #include "abstractaddhost.h"
 #include <gtkmm.h>
 
 class AddHostDialog : private AbstractAddHost
 {
 public:
-    AddHostDialog(PiServer *ps, Gtk::Window *parent = NULL);
+    AddHostDialog(EfServer *ps, Gtk::Window *parent = NULL);
     virtual ~AddHostDialog();
     bool exec();
 
