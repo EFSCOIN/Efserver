@@ -4,7 +4,7 @@
 #include <gtkmm.h>
 #include <string>
 
-class PiServer;
+class EfServer;
 class Distribution;
 
 class ExportDistroDialog
@@ -15,7 +15,7 @@ public:
     bool exec();
 
 protected:
-    PiServer *_ps;
+    EfServer *_ps;
     Distribution *_distro;
     Gtk::Dialog *_progressDialog;
     GPid _pid;
