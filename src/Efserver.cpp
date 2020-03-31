@@ -1,4 +1,4 @@
-#include "piserver.h"
+#include "efserver.h"
 #include "distribution.h"
 #include "host.h"
 #include <fstream>
@@ -34,11 +34,11 @@ PiServer::PiServer()
 #endif
 
     /* Parse installed_distros.json if it exists */
-    if (::access(PISERVER_DISTROFILE, R_OK) != -1)
+    if (::access(EFSERVER_DISTROFILE, R_OK) != -1)
     {
         try
         {
-            std::ifstream i(PISERVER_DISTROFILE);
+            std::ifstream i(EFSERVER_DISTROFILE);
             json j;
             i >> j;
 
@@ -59,11 +59,11 @@ PiServer::PiServer()
     }
 
     /* Parse hosts.json if it exists */
-    if (::access(PISERVER_HOSTSFILE, R_OK) != -1)
+    if (::access(EFSERVER_HOSTSFILE, R_OK) != -1)
     {
         try
         {
-            ifstream i(PISERVER_HOSTSFILE);
+            ifstream i(EFSERVER_HOSTSFILE);
             json j;
             i >> j;
 
@@ -88,11 +88,11 @@ PiServer::PiServer()
         }
     }
 
-    if (::access(PISERVER_SETTINGSFILE, R_OK) != -1)
+    if (::access(EFSERVER_SETTINGSFILE, R_OK) != -1)
     {
         try
         {
-            ifstream i(PISERVER_SETTINGSFILE);
+            ifstream i(EFSERVER_SETTINGSFILE);
             i >> _settings;
         }
         catch (exception &e)
@@ -102,7 +102,7 @@ PiServer::PiServer()
     }
 }
 
-PiServer::~PiServer()
+EfServer::~EfServer()
 {
     for (auto &kv : _hosts)
         delete kv.second;
@@ -116,15 +116,15 @@ PiServer::~PiServer()
 }
 
 /* User management functions */
-void PiServer::addUser(const std::string &name, const std::string &password, bool forcePasswordChange, int gid)
+void EfServer::addUser(const std::string &name, const std::string &password, bool forcePasswordChange, int gid)
 {
     if (!isUsernameValid(name)) /* Should not happen. UI should check earlier */
         throw runtime_error("Username not well-formed");
 
-    int uid = max(_getHighestUID()+1, PISERVER_MIN_UID);
+    int uid = max(_getHighestUID()+1, EFSERVER_MIN_UID);
 
     string dn = "cn="+name+","+_ldapDN();
-    string homedir = string(PISERVER_HOMEROOT)+"/"+name;
+    string homedir = string(EFSERVER_HOMEROOT)+"/"+name;
     multimap<string,string> attr;
     struct crypt_data cd;
 
@@ -137,7 +137,7 @@ void PiServer::addUser(const std::string &name, const std::string &password, boo
     attr.insert(make_pair("uidNumber", to_string(uid)));
     attr.insert(make_pair("gidNumber", to_string(gid)));
     attr.insert(make_pair("homeDirectory", homedir));
-    attr.insert(make_pair("loginShell", string(PISERVER_SHELL)));
+    attr.insert(make_pair("loginShell", string(EFSERVER_SHELL)));
     attr.insert(make_pair("userPassword", string("{CRYPT}")+string(crypt_r(password.c_str(), "$5$", &cd))));
     if (forcePasswordChange)
     {
@@ -146,7 +146,7 @@ void PiServer::addUser(const std::string &name, const std::string &password, boo
     }
     _ldapAdd(dn, attr);
 
-    if (::access("/usr/share/pam-configs/mkhomedir-piserver", F_OK) == -1)
+    if (::access("/usr/share/pam-configs/mkhomedir-efserver", F_OK) == -1)
     {
         /* Only create home directory manually if not using mkhomedir */
         if (::mkdir(homedir.c_str(), 0700) == -1)
@@ -156,12 +156,12 @@ void PiServer::addUser(const std::string &name, const std::string &password, boo
     }
 }
 
-void PiServer::addGroup(const std::string &name, const std::string &description, int gid)
+void EfServer::addGroup(const std::string &name, const std::string &description, int gid)
 {
     if (!isUsernameValid(name))
         throw runtime_error("Group name not well-formed");
     if (gid == -1)
-        gid =  max(_getHighestUID("posixGroup", "gidNumber")+1, PISERVER_MIN_UID);
+        gid =  max(_getHighestUID("posixGroup", "gidNumber")+1, EFSERVER_MIN_UID);
 
     string dn = "cn="+name+",ou=groups,"+_ldapDN();
     multimap<string,string> attr = {
@@ -174,7 +174,7 @@ void PiServer::addGroup(const std::string &name, const std::string &description,
     _ldapAdd(dn, attr);
 }
 
-void PiServer::deleteGroup(const std::string &name)
+void EfServer::deleteGroup(const std::string &name)
 {
     string dn = "cn="+name+",ou=groups,"+_ldapDN();
 
@@ -185,7 +185,7 @@ void PiServer::deleteGroup(const std::string &name)
     _ldapDelete(dn);
 }
 
-int PiServer::_unlink_cb(const char *fpath, const struct stat *, int, struct FTW *)
+int EfServer::_unlink_cb(const char *fpath, const struct stat *, int, struct FTW *)
 {
     int rv = remove(fpath);
 
@@ -195,9 +195,9 @@ int PiServer::_unlink_cb(const char *fpath, const struct stat *, int, struct FTW
     return rv;
 }
 
-void PiServer::deleteUser(const std::string &dn, const string &name)
+void EfServer::deleteUser(const std::string &dn, const string &name)
 {
-    string homedir = string(PISERVER_HOMEROOT)+"/"+name;
+    string homedir = string(EFSERVER_HOMEROOT)+"/"+name;
 
     if (!isUsernameValid(name))
         throw runtime_error("Username not well-formed");
@@ -212,7 +212,7 @@ void PiServer::deleteUser(const std::string &dn, const string &name)
     }
 }
 
-void PiServer::updateUser(const std::string &dn, std::multimap<std::string,std::string> &attr)
+void EfServer::updateUser(const std::string &dn, std::multimap<std::string,std::string> &attr)
 {
     struct crypt_data cd;
 
@@ -228,7 +228,7 @@ void PiServer::updateUser(const std::string &dn, std::multimap<std::string,std::
     _ldapModify(dn, attr);
 }
 
-bool PiServer::isUsernameValid(const std::string &name)
+bool EfServer::isUsernameValid(const std::string &name)
 {
     if (name.empty())
         return false;
@@ -248,7 +248,7 @@ bool PiServer::isUsernameValid(const std::string &name)
     return true;
 }
 
-bool PiServer::isUsernameAvailable(const std::string &name)
+bool EfServer::isUsernameAvailable(const std::string &name)
 {
     bool avail;
     int rc;
@@ -275,12 +275,12 @@ bool PiServer::isUsernameAvailable(const std::string &name)
     return avail;
 }
 
-bool PiServer::isUsernameAvailableLocally(const std::string &name)
+bool EfServer::isUsernameAvailableLocally(const std::string &name)
 {
     return getpwnam(name.c_str()) == NULL;
 }
 
-std::map<std::string,User> PiServer::searchUsernames(const std::string &query)
+std::map<std::string,User> EfServer::searchUsernames(const std::string &query)
 {
     std::map<string,User> users;
     LDAPMessage  *result = NULL, *entry = NULL;
@@ -347,13 +347,13 @@ std::map<std::string,User> PiServer::searchUsernames(const std::string &query)
 }
 
 /* Host management functions */
-void PiServer::addHost(Host *h)
+void EfServer::addHost(Host *h)
 {
     _hosts[h->mac()] = h;
     updateHost(h);
 }
 
-void PiServer::addHosts(std::set<std::string> macs, Distribution *d, const std::string &description)
+void EfServer::addHosts(std::set<std::string> macs, Distribution *d, const std::string &description)
 {
     for (string mac : macs)
     {
@@ -365,7 +365,7 @@ void PiServer::addHosts(std::set<std::string> macs, Distribution *d, const std::
     _saveHosts();
 }
 
-void PiServer::deleteHost(Host *h)
+void EfServer::deleteHost(Host *h)
 {
     _hosts.erase(h->mac());
 
@@ -377,17 +377,17 @@ void PiServer::deleteHost(Host *h)
     delete h;
 }
 
-Host *PiServer::getHost(const std::string &mac)
+Host *EfServer::getHost(const std::string &mac)
 {
     return _hosts.at(mac);
 }
 
-std::map<std::string,Host *> *PiServer::getHosts()
+std::map<std::string,Host *> *EfServer::getHosts()
 {
     return &_hosts;
 }
 
-void PiServer::updateHost(Host *h, bool saveConfigs)
+void EfServer::updateHost(Host *h, bool saveConfigs)
 {
     /* Set tftproot symlink from host's MAC address to distribution's boot folder */
     string link = h->tftpPath();
@@ -407,10 +407,10 @@ void PiServer::updateHost(Host *h, bool saveConfigs)
         _saveHosts();
 }
 
-void PiServer::_saveHosts()
+void EfServer::_saveHosts()
 {
     json j = json::array();
-    ofstream o(PISERVER_HOSTSFILE);
+    ofstream o(EFSERVER_HOSTSFILE);
 
     for (auto &kv : _hosts)
     {
@@ -432,10 +432,10 @@ void PiServer::_saveHosts()
     regenDnsmasqConf();
 }
 
-void PiServer::_saveDistributions()
+void EfServer::_saveDistributions()
 {
     json j = json::array();
-    ofstream o(PISERVER_DISTROFILE);
+    ofstream o(EFSERVER_DISTROFILE);
 
     for (auto &kv : _distro)
     {
@@ -451,18 +451,18 @@ void PiServer::_saveDistributions()
     o << std::setw(4) << j << std::endl;
 }
 
-void PiServer::regenDnsmasqConf(bool restartDnsmasqIfChanged)
+void EfServer::regenDnsmasqConf(bool restartDnsmasqIfChanged)
 {
-    //ofstream fs(PISERVER_DNSMASQCONFFILE, ios_base::out | ios_base::trunc);
+    //ofstream fs(EFSERVER_DNSMASQCONFFILE, ios_base::out | ios_base::trunc);
     stringstream fs;
     fs << "# This is an auto-generated file. DO NOT EDIT" << endl << endl
        << "bind-dynamic" << endl
        << "log-dhcp" << endl
        << "enable-tftp" << endl
-       << "tftp-root="+string(PISERVER_TFTPROOT) << endl
+       << "tftp-root="+string(EFSERVER_TFTPROOT) << endl
        << "tftp-unique-root=mac" << endl
        << "local-service" << endl
-       << "host-record=piserver,"+currentIP() << endl;
+       << "host-record=efserver,"+currentIP() << endl;
     if ( getSetting("standaloneDhcpServer", 0) )
     {
         fs << "dhcp-range=tag:piserver,"+getSetting("startIP")+","+getSetting("endIP")+","+getSetting("netmask") << endl;
@@ -474,26 +474,26 @@ void PiServer::regenDnsmasqConf(bool restartDnsmasqIfChanged)
     {
         fs << "dhcp-range=tag:piserver,"+currentIP()+",proxy" << endl;
     }
-    fs << "pxe-service=tag:piserver,0,\"Raspberry Pi Boot\"" << endl
-       << "dhcp-reply-delay=tag:piserver,1" << endl << endl;
+    fs << "pxe-service=tag:piserver,0,\"Efscoin Efs Boot\"" << endl
+       << "dhcp-reply-delay=tag:efserver,1" << endl << endl;
 
     for (auto &kv : _hosts)
     {
         if (kv.second->distro())
         {
-            fs << "dhcp-host="+kv.second->mac()+",set:piserver" << endl;
+            fs << "dhcp-host="+kv.second->mac()+",set:efserver" << endl;
         }
     }
 
     /* Only save and restart if something actually changed */
-    if (restartDnsmasqIfChanged && _fileGetContents(PISERVER_DNSMASQCONFFILE) != fs.str())
+    if (restartDnsmasqIfChanged && _fileGetContents(EFSERVER_DNSMASQCONFFILE) != fs.str())
     {
-        _filePutContents(PISERVER_DNSMASQCONFFILE, fs.str());
+        _filePutContents(EFSERVER_DNSMASQCONFFILE, fs.str());
         _restartService("dnsmasq");
     }
 }
 
-void PiServer::addToExports(const std::string &line)
+void EfServer::addToExports(const std::string &line)
 {
     string exports = _fileGetContents("/etc/exports");
     if (exports.find(line) == string::npos)
@@ -506,7 +506,7 @@ void PiServer::addToExports(const std::string &line)
     }
 }
 
-void PiServer::_patchDistributions()
+void EfServer::_patchDistributions()
 {
     regex nfsrootRegex("(nfsroot=[^ ]* ?)");
     regex rootRegex("(root=[^ ]* ?)");
@@ -539,7 +539,7 @@ void PiServer::_patchDistributions()
                 _filePutContents(cmdlinefile, cmdlinetxt);
         }
 
-        string newResolv = "# Auto-genererated by PiServer - Do not change\n"
+        string newResolv = "# Auto-genererated by EfServer - Do not change\n"
                 "nameserver "+currentIP()+"\n";
         if ( _fileGetContents(resolvfile) != newResolv )
         {
@@ -550,7 +550,7 @@ void PiServer::_patchDistributions()
     }
 }
 
-void PiServer::updateIP()
+void EfServer::updateIP()
 {
     if (currentIP().empty())
         return;
@@ -560,12 +560,12 @@ void PiServer::updateIP()
 }
 
 /* OS management functions */
-std::map<std::string,Distribution *> *PiServer::getDistributions()
+std::map<std::string,Distribution *> *EfServer::getDistributions()
 {
     return &_distro;
 }
 
-void PiServer::deleteDistribution(const std::string &name)
+void EfServer::deleteDistribution(const std::string &name)
 {
     Distribution *d = _distro.at(name);
     int inuseby = 0;
@@ -586,7 +586,7 @@ void PiServer::deleteDistribution(const std::string &name)
     _saveDistributions();
 }
 
-void PiServer::addDistribution(Distribution *distro)
+void EfServer::addDistribution(Distribution *distro)
 {
     string name = distro->name();
 
@@ -614,7 +614,7 @@ void PiServer::addDistribution(Distribution *distro)
     _patchDistributions();
 }
 
-std::string PiServer::currentIP(const std::string &iface)
+std::string EfServer::currentIP(const std::string &iface)
 {
     string result;
 
@@ -655,7 +655,7 @@ std::map<std::string,std::string> PiServer::getInterfaces()
     return res;
 }
 
-void PiServer::_restartService(const char *name)
+void EfServer::_restartService(const char *name)
 {
     GError *error = NULL;
     const gchar *cmd[] = {"/bin/systemctl", "restart", name, NULL};
@@ -666,11 +666,11 @@ void PiServer::_restartService(const char *name)
     }
 }
 
-void PiServer::startChrootTerminal(const std::string &distribution)
+void EfServer::startChrootTerminal(const std::string &distribution)
 {
     GError *error = NULL;
     string distroPath = _distro.at(distribution)->distroPath();
-    string cmdline1 = string (PISERVER_DATADIR "/scripts/chroot_image.sh");
+    string cmdline1 = string (EFSERVER_DATADIR "/scripts/chroot_image.sh");
     string cmdline2 = distroPath;
     const gchar *cmd[] = {"/usr/bin/x-terminal-emulator", "-e", cmdline1.c_str(), cmdline2.c_str(), NULL};
 
@@ -680,7 +680,7 @@ void PiServer::startChrootTerminal(const std::string &distribution)
     }
 }
 
-bool PiServer::hasArmCpu()
+bool EfServer::hasArmCpu()
 {
     struct utsname u;
 
@@ -692,15 +692,15 @@ bool PiServer::hasArmCpu()
     return false;
 }
 
-void PiServer::_connectToLDAP()
+void EfServer::_connectToLDAP()
 {
     if (!_ldap)
     {
         struct berval cred;
 
-        string ldapbind = getSetting("ldapUser", PISERVER_LDAP_USER);
+        string ldapbind = getSetting("ldapUser", EFSERVER_LDAP_USER);
         string ldappass = getSetting("ldapPassword");
-        string ldapuri  = getSetting("ldapUri", PISERVER_LDAP_URL);
+        string ldapuri  = getSetting("ldapUri", EFSERVER_LDAP_URL);
 
         int version = LDAP_VERSION3;
         int rc = ldap_initialize(&_ldap, ldapuri.c_str() );
@@ -726,7 +726,7 @@ void PiServer::_connectToLDAP()
     }
 }
 
-std::string PiServer::_ldapEscape(const std::string &input)
+std::string EfServer::_ldapEscape(const std::string &input)
 {
     string output;
 
@@ -757,7 +757,7 @@ std::string PiServer::_ldapEscape(const std::string &input)
     return output;
 }
 
-int PiServer::_getHighestUID(const char *objectClass /*= "posixAccount"*/, const char *attrname /*= "uidNumber"*/)
+int EfServer::_getHighestUID(const char *objectClass /*= "posixAccount"*/, const char *attrname /*= "uidNumber"*/)
 {
     set<int> uids;
     LDAPMessage  *result = NULL, *entry = NULL;
@@ -803,7 +803,7 @@ int PiServer::_getHighestUID(const char *objectClass /*= "posixAccount"*/, const
         return *uids.rbegin();
 }
 
-void PiServer::_ldapAdd(const std::string &dn, const multimap<std::string,std::string> &attrmap, bool modify)
+void EfServer::_ldapAdd(const std::string &dn, const multimap<std::string,std::string> &attrmap, bool modify)
 {
     _connectToLDAP();
     int count = attrmap.size();
@@ -865,12 +865,12 @@ void PiServer::_ldapAdd(const std::string &dn, const multimap<std::string,std::s
         throw runtime_error("Error adding object to LDAP: "+string(ldap_err2string(rc)));
 }
 
-void PiServer::_ldapModify(const std::string &dn, const std::multimap<std::string,std::string> &attr)
+void EfServer::_ldapModify(const std::string &dn, const std::multimap<std::string,std::string> &attr)
 {
    _ldapAdd(dn, attr, true);
 }
 
-void PiServer::_ldapDelete(const std::string &dn)
+void EfServer::_ldapDelete(const std::string &dn)
 {
     _connectToLDAP();
 
@@ -879,7 +879,7 @@ void PiServer::_ldapDelete(const std::string &dn)
         throw runtime_error("Error deleting object from LDAP: "+string(ldap_err2string(rc)));
 }
 
-std::string PiServer::_fileGetContents(const std::string &filename)
+std::string EfServer::_fileGetContents(const std::string &filename)
 {
     ifstream i(filename, ios_base::in | ios_base::binary);
     stringstream buffer;
@@ -887,23 +887,23 @@ std::string PiServer::_fileGetContents(const std::string &filename)
     return buffer.str();
 }
 
-void PiServer::_filePutContents(const std::string &filename, const std::string &contents)
+void EfServer::_filePutContents(const std::string &filename, const std::string &contents)
 {
     ofstream o(filename, ios_base::out | ios_base::binary | ios_base::trunc);
     o.write(contents.c_str(), contents.size());
 }
 
-void PiServer::setSetting(const std::string &key, const std::string &value)
+void EfServer::setSetting(const std::string &key, const std::string &value)
 {
     _settings[key] = value;
 }
 
-void PiServer::setSetting(const std::string &key, int value)
+void EfServer::setSetting(const std::string &key, int value)
 {
     _settings[key] = value;
 }
 
-std::string PiServer::getSetting(const std::string &key, const std::string &defaultValue)
+std::string EfServer::getSetting(const std::string &key, const std::string &defaultValue)
 {
     try
     {
@@ -915,7 +915,7 @@ std::string PiServer::getSetting(const std::string &key, const std::string &defa
     }
 }
 
-int PiServer::getSetting(const std::string &key, int defaultValue)
+int EfServer::getSetting(const std::string &key, int defaultValue)
 {
     try
     {
@@ -927,27 +927,27 @@ int PiServer::getSetting(const std::string &key, int defaultValue)
     }
 }
 
-void PiServer::unsetSetting(const std::string &key)
+void EfServer::unsetSetting(const std::string &key)
 {
     _settings.erase(key);
 }
 
-void PiServer::saveSettings()
+void EfServer::saveSettings()
 {
-    if (::access(PISERVER_SETTINGSFILE, F_OK) == -1)
+    if (::access(EFSERVER_SETTINGSFILE, F_OK) == -1)
     {
         /* File doesn't exists yet. Create it empty first as
            ofstream doesn't support setting file permissions */
-        int fd = ::open(PISERVER_SETTINGSFILE, O_CREAT, 0600);
+        int fd = ::open(EFSERVER_SETTINGSFILE, O_CREAT, 0600);
         if (fd != -1)
             close(fd);
     }
 
-    std::ofstream o(PISERVER_SETTINGSFILE);
+    std::ofstream o(EFSERVER_SETTINGSFILE);
     o << std::setw(4) << _settings << std::endl;
 }
 
-double PiServer::availableDiskSpace(const std::string &path)
+double EfServer::availableDiskSpace(const std::string &path)
 {
     double bytesfree = 0;
     struct statvfs buf;
@@ -964,28 +964,28 @@ double PiServer::availableDiskSpace(const std::string &path)
     return bytesfree;
 }
 
-bool PiServer::_activeDirectory()
+bool EfServer::_activeDirectory()
 {
     return getSetting("ldapServerType") == "ad";
 }
 
-bool PiServer::externalServer()
+bool EfServer::externalServer()
 {
     return !getSetting("ldapServerType").empty();
 }
 
-std::string PiServer::_ldapDN()
+std::string EfServer::_ldapDN()
 {
     return getSetting("ldapDN", PISERVER_LDAP_DN);
 }
 
-std::string PiServer::_uidField()
+std::string EfServer::_uidField()
 {
     return _activeDirectory() ? "sAMAccountName" : "uid";
 }
 
 /* Try out LDAP login details, and return domain sid if AD */
-std::string PiServer::getDomainSidFromLdap(const std::string &server, const std::string &servertype,
+std::string EfServer::getDomainSidFromLdap(const std::string &server, const std::string &servertype,
                                        const std::string &basedn, const std::string &bindUser, const std::string &bindPass)
 {
     string sid;
@@ -1075,7 +1075,7 @@ std::string PiServer::getDomainSidFromLdap(const std::string &server, const std:
     return sid;
 }
 
-std::set<std::string> PiServer::getPotentialBaseDNs()
+std::set<std::string> EfServer::getPotentialBaseDNs()
 {
     std::set<string> containers;
     LDAPMessage  *result = NULL, *entry = NULL;
@@ -1147,7 +1147,7 @@ std::set<std::string> PiServer::getLdapGroups()
     return groups;
 }
 
-std::string PiServer::getLdapFilter(const std::string &forGroup)
+std::string EfServer::getLdapFilter(const std::string &forGroup)
 {
     string filter;
 
