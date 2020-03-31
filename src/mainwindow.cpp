@@ -21,10 +21,10 @@
 using namespace std;
 using nlohmann::json;
 
-MainWindow::MainWindow(Glib::RefPtr<Gtk::Application> app, PiServer *ps)
+MainWindow::MainWindow(Glib::RefPtr<Gtk::Application> app, EfServer *ps)
     : _app(app), _ps(ps), _dt(NULL)
 {
-    auto builder = Gtk::Builder::create_from_resource("/data/piserver.glade");
+    auto builder = Gtk::Builder::create_from_resource("/data/efserver.glade");
     builder->get_widget("maindialog", _window);
     builder->get_widget("notebook", _notebook);
     builder->get_widget("distrotree", _distrotree);
@@ -45,7 +45,7 @@ MainWindow::MainWindow(Glib::RefPtr<Gtk::Application> app, PiServer *ps)
 
     _distrostore = Glib::RefPtr<Gtk::ListStore>::cast_dynamic( builder->get_object("osstore") );
     _userstore = Glib::RefPtr<Gtk::ListStore>::cast_dynamic( builder->get_object("userstore") );
-    _hoststore = Glib::RefPtr<Gtk::ListStore>::cast_dynamic( builder->get_object("pistore") );
+    _hoststore = Glib::RefPtr<Gtk::ListStore>::cast_dynamic( builder->get_object("efstore") );
     _ethstore = Glib::RefPtr<Gtk::ListStore>::cast_dynamic( builder->get_object("ethstore") );
     _folderstore = Glib::RefPtr<Gtk::ListStore>::cast_dynamic( builder->get_object("folderstore") );
 
@@ -142,8 +142,8 @@ MainWindow::MainWindow(Glib::RefPtr<Gtk::Application> app, PiServer *ps)
     _reloadFolders();
     _usersearchentry->grab_focus();
 
-    _dt = new DownloadThread(PISERVER_REPO_URL);
-    //_dt->setCacheFile(PISERVER_REPO_CACHEFILE);
+    _dt = new DownloadThread(EFSERVER_REPO_URL);
+    //_dt->setCacheFile(EFSERVER_REPO_CACHEFILE);
     _dt->signalSuccess().connect( sigc::mem_fun(this, &MainWindow::onDownloadSuccessful) );
     _dt->signalError().connect( sigc::mem_fun(this, &MainWindow::onDownloadFailed) );
     _dt->start();
@@ -602,7 +602,7 @@ void MainWindow::onOtherDhcpServerDetected(const std::string &otherserverip)
                            "There is already another DHCP server (%1) active in your network.\n"
                            "Having more than one DHCP server hand out IP-addresses from the same range can result "
                            "in serious problems, such as that more than one client is assigned the same IP-address.\n"
-                           "Please read the <a href=\"https://github.com/raspberrypi/piserver/wiki\">documentation</a> before proceeding.\n\n"
+                           "Please read the <a href=\"https://github.com/efscoin/efserver/wiki\">document</a> before proceeding.\n\n"
                            "Are you sure you want to activate standalone DHCP server mode?"
                            ), otherserverip), true, Gtk::MESSAGE_QUESTION, Gtk::BUTTONS_YES_NO);
     d.set_transient_for(*_window);
@@ -636,7 +636,7 @@ void MainWindow::on_delfolder_clicked()
         d.set_transient_for(*_window);
         if (d.run() == Gtk::RESPONSE_YES)
         {
-            string path = PISERVER_SHAREDROOT "/" +folder;
+            string path = EFSERVER_SHAREDROOT "/" +folder;
             if (::rmdir(path.c_str()) == -1)
             {
                 Gtk::MessageDialog ed(_("Error deleting folder. Make sure it is empty."));
@@ -678,14 +678,14 @@ void MainWindow::_reloadFolders()
 
     struct dirent *dp;
     struct stat st;
-    DIR *d = ::opendir(PISERVER_SHAREDROOT);
+    DIR *d = ::opendir(EFSERVER_SHAREDROOT);
 
     if (d)
     {
         while (dp = ::readdir(d))
         {
             string name = dp->d_name;
-            string path = PISERVER_SHAREDROOT "/" +name;
+            string path = EFSERVER_SHAREDROOT "/" +name;
             string owner;
 
             if (name == "." || name == "..")
