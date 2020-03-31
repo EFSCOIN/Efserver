@@ -1,5 +1,5 @@
 #include "distribution.h"
-#include "piserver.h"
+#include "efserver.h"
 #include <algorithm>
 
 Distribution::Distribution(const std::string &name, const std::string &version, const std::string &path)
@@ -7,7 +7,7 @@ Distribution::Distribution(const std::string &name, const std::string &version, 
 {
     if (path.empty())
     {
-        _path = std::string(PISERVER_DISTROROOT)+"/"+_name;
+        _path = std::string(EFSERVER_DISTROROOT)+"/"+_name;
         if (!_version.empty())
             _path += "-"+_version;
 
