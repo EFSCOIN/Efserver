@@ -5,12 +5,12 @@
 #include <thread>
 #include <map>
 #include <glibmm.h>
-#include "piserver.h"
+#include "efserver.h"
 
 class DependenciesInstallThread
 {
 public:
-    DependenciesInstallThread(PiServer *ps);
+    DependenciesInstallThread(EfServer *ps);
     virtual ~DependenciesInstallThread();
 
     /*
