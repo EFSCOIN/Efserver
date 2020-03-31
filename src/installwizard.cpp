@@ -5,7 +5,7 @@
 
 using namespace std;
 
-InstallWizard::InstallWizard(Glib::RefPtr<Gtk::Application> app, PiServer *ps)
+InstallWizard::InstallWizard(Glib::RefPtr<Gtk::Application> app, EfServer *ps)
     : AbstractAddHost(ps), AbstractAddUser(ps),
       AbstractAddDistro(ps), _app(app), _ps(ps), _activeDiscovery(NULL), _prevPage(0)
 {
@@ -194,7 +194,7 @@ void InstallWizard::onPagePrepare(Gtk::Widget *newPage)
                                 "map passwd homeDirectory    \"/home/$sAMAccountName\"\n"
                                 "map passwd gecos            displayName\n"
                                 "map passwd loginShell       \"/bin/bash\"\n"
-                                "map passwd gidNumber        \""+to_string(PISERVER_GID)+"\"\n"
+                                "map passwd gidNumber        \""+to_string(EFSERVER_GID)+"\"\n"
                                 "map passwd uidNumber        objectSid:"+domainSid+"\n"
                         );
                     }
