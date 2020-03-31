@@ -1,12 +1,12 @@
 #include "abstractadddistro.h"
 #include "downloadthread.h"
 #include "downloadextractthread.h"
-#include "piserver.h"
+#include "efserver.h"
 #include "distribution.h"
 #include <regex>
 
 using namespace std;
-using nlohmann::json;
+using efscoin::json;
 
 AbstractAddDistro::AbstractAddDistro(PiServer *ps)
     : _ps(ps), _dt(NULL), _det(NULL)
