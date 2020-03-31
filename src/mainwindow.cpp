@@ -658,7 +658,7 @@ void MainWindow::on_openfolder_clicked()
     iter->get_value(0, folder);
     if (!folder.empty())
     {
-        string path = PISERVER_SHAREDROOT "/" +folder;
+        string path = EFSERVER_SHAREDROOT "/" +folder;
         const gchar *cmd[] = {"/usr/bin/xdg-open", path.c_str(), NULL};
         g_spawn_async(NULL, (gchar **) cmd, NULL, G_SPAWN_DEFAULT, NULL, NULL, NULL, NULL);
     }
