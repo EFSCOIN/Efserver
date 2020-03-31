@@ -4,18 +4,18 @@
 #include <gtkmm.h>
 #include <string>
 
-class PiServer;
+class EfServer;
 class Distribution;
 
 class CloneDistroDialog
 {
 public:
-    CloneDistroDialog(PiServer *ps, Distribution *olddistro, Gtk::Window *parent);
+    CloneDistroDialog(EfServer *ps, Distribution *olddistro, Gtk::Window *parent);
     virtual ~CloneDistroDialog();
     bool exec();
 
 protected:
-    PiServer *_ps;
+    EfServer *_ps;
     Distribution *_olddistro;
     Gtk::Dialog *_dialog, *_progressDialog;
     Gtk::Button *_okButton;
