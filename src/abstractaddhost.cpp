@@ -3,7 +3,7 @@
 
 using namespace std;
 
-AbstractAddHost::AbstractAddHost(PiServer *ps)
+AbstractAddHost::AbstractAddHost(EfServer *ps)
     : _ps(ps)
 {
 }
