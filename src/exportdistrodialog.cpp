@@ -1,6 +1,6 @@
 #include "exportdistrodialog.h"
 #include "distribution.h"
-#include "piserver.h"
+#include "efserver.h"
 #include <unistd.h>
 #include <sys/types.h>
 #include <signal.h>
@@ -8,7 +8,7 @@
 
 using namespace std;
 
-ExportDistroDialog::ExportDistroDialog(PiServer *ps, Distribution *distro, Gtk::Window *parent)
+ExportDistroDialog::ExportDistroDialog(EfServer *ps, Distribution *distro, Gtk::Window *parent)
     : _ps(ps), _distro(distro), _parent(parent)
 {
 }
