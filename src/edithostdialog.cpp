@@ -5,7 +5,7 @@
 
 using namespace std;
 
-EditHostDialog::EditHostDialog(PiServer *ps, const std::string &mac, Gtk::Window *parent)
+EditHostDialog::EditHostDialog(EfServer *ps, const std::string &mac, Gtk::Window *parent)
     : _ps(ps), _mac(mac)
 {
     auto builder = Gtk::Builder::create_from_resource("/data/edithostdialog.glade");
