@@ -2,7 +2,7 @@
 
 using namespace std;
 
-EditUserDialog::EditUserDialog(PiServer *ps, const std::string &dn, const std::string &user, const std::string &desc, Gtk::Window *parent)
+EditUserDialog::EditUserDialog(EfServer *ps, const std::string &dn, const std::string &user, const std::string &desc, Gtk::Window *parent)
     : _ps(ps), _parentWindow(parent), _dn(dn), _user(user), _oldDesc(desc)
 {
     Gtk::Label *userlabel;
