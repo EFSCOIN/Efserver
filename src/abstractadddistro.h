@@ -6,7 +6,7 @@
 
 class DownloadThread;
 class DownloadExtractThread;
-class PiServer;
+class EfServer;
 class Distribution;
 
 class AbstractAddDistro
@@ -32,7 +32,7 @@ protected:
     virtual void onInstallationFailed(const std::string &error) = 0;
 
 private:
-    PiServer *_ps;
+    EfServer *_ps;
     DownloadThread *_dt;
     DownloadExtractThread *_det;
     std::chrono::steady_clock::time_point _t1;
