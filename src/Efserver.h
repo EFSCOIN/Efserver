@@ -1,5 +1,5 @@
-#ifndef PISERVER_H
-#define PISERVER_H
+#ifndef EFSERVER_H
+#define EFSERVER_H
 
 #include "config.h"
 #include "user.h"
@@ -22,14 +22,14 @@ class Distribution;
 struct FTW;
 struct stat;
 
-class PiServer
+class EfServer
 {
 public:
-    PiServer();
-    virtual ~PiServer();
+    EfServer();
+    virtual ~EfServer();
 
     /* User management functions */
-    void addUser(const std::string &name, const std::string &password, bool forcePasswordChange = false, int gid = PISERVER_GID);
+    void addUser(const std::string &name, const std::string &password, bool forcePasswordChange = false, int gid = EFSERVER_GID);
     void addGroup(const std::string &name, const std::string &description, int gid = -1);
     void deleteGroup(const std::string &name);
     void deleteUser(const std::string &dn, const std::string &name);
@@ -65,7 +65,7 @@ public:
     void saveSettings();
     void regenDnsmasqConf(bool restartDnsmasqIfChanged = true);
     void addToExports(const std::string &line);
-    double availableDiskSpace(const std::string &path = PISERVER_DISTROROOT);
+    double availableDiskSpace(const std::string &path = EFSERVER_DISTROROOT);
     bool hasArmCpu();
     bool externalServer();
     std::string getDomainSidFromLdap(const std::string &server, const std::string &servertype, const std::string &basedn, const std::string &bindUser, const std::string &bindPass);
@@ -97,4 +97,4 @@ protected:
     std::string _uidField();
 };
 
-#endif // PISERVER_H
+#endif // EFSERVER_H
