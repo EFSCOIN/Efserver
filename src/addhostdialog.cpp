@@ -6,7 +6,7 @@
 
 using namespace std;
 
-AddHostDialog::AddHostDialog(PiServer *ps, Gtk::Window *parent)
+AddHostDialog::AddHostDialog(EfServer *ps, Gtk::Window *parent)
     : AbstractAddHost(ps), _ps(ps)
 {
     auto builder = Gtk::Builder::create_from_resource("/data/addhostdialog.glade");
