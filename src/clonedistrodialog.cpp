@@ -1,13 +1,13 @@
 #include "clonedistrodialog.h"
 #include "distribution.h"
-#include "piserver.h"
+#include "efserver.h"
 #include <unistd.h>
 #include <sys/types.h>
 #include <signal.h>
 
 using namespace std;
 
-CloneDistroDialog::CloneDistroDialog(PiServer *ps, Distribution *olddistro, Gtk::Window *parent)
+CloneDistroDialog::CloneDistroDialog(EfServer *ps, Distribution *olddistro, Gtk::Window *parent)
     : _ps(ps), _olddistro(olddistro)
 {
     auto builder = Gtk::Builder::create_from_resource("/data/clonedistrodialog.glade");
