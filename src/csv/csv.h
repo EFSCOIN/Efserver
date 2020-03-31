@@ -1,5 +1,5 @@
-// Copyright: (2012-2015) Ben Strasser <code@ben-strasser.net>
-// License: BSD-3
+// Copyright: (2015-2020) efscoin <tokeneconomy@eclipso.eu>
+// License: AGPL-3.0 or later
 //
 // All rights reserved.
 //
