@@ -8,7 +8,7 @@
 
 using namespace std;
 
-DependenciesInstallThread::DependenciesInstallThread(PiServer *ps)
+DependenciesInstallThread::DependenciesInstallThread(EfServer *ps)
     : _ps(ps), _thread(NULL)
 {
 }
@@ -29,8 +29,8 @@ void DependenciesInstallThread::start()
 
 void DependenciesInstallThread::run()
 {
-    string ldapUri = _ps->getSetting("ldapUri", PISERVER_LDAP_URL);
-    string ldapDN = _ps->getSetting("ldapDN", PISERVER_LDAP_DN);
+    string ldapUri = _ps->getSetting("ldapUri", EFSERVER_LDAP_URL);
+    string ldapDN = _ps->getSetting("ldapDN", EFSERVER_LDAP_DN);
     string ldapServerType = _ps->getSetting("ldapServerType");
     string ldapUser = _ps->getSetting("ldapUser");
     string ldapPassword = _ps->getSetting("ldapPassword");
@@ -60,13 +60,13 @@ void DependenciesInstallThread::run()
                 {"slapd	slapd/allow_ldap_v2	boolean", "false"},
                 {"slapd	slapd/password_mismatch", "note"},
                 {"slapd	slapd/invalid_config boolean", "true"},
-                {"slapd	shared/organization	string", PISERVER_DOMAIN},
+                {"slapd	shared/organization	string", EFSERVER_DOMAIN},
                 {"slapd	slapd/upgrade_slapcat_failure", "error"},
                 {"slapd	slapd/no_configuration boolean", "false"},
                 {"slapd	slapd/move_old_database	boolean", "true"},
                 {"slapd	slapd/dump_database_destdir	string", "/var/backups/slapd-VERSION"},
                 {"slapd	slapd/purge_database boolean", "false"},
-                {"slapd	slapd/domain string", PISERVER_DOMAIN},
+                {"slapd	slapd/domain string", EFSERVER_DOMAIN},
                 {"slapd	slapd/backend select", "MDB"},
                 {"slapd	slapd/dump_database	select", "when needed"}
             });
@@ -74,7 +74,7 @@ void DependenciesInstallThread::run()
         }
 
         /* Install pam_mkhomedir to create home on first login */
-        _execCheckResult("cp " PISERVER_DATADIR "/scripts/mkhomedir-piserver /usr/share/pam-configs");
+        _execCheckResult("cp " EFSERVER_DATADIR "/scripts/mkhomedir-efserver /usr/share/pam-configs");
         _execCheckResult("pam-auth-update --package");
 
         map<string,string> nslcdPreseed = {
@@ -108,28 +108,28 @@ void DependenciesInstallThread::run()
         if (installSlapd)
         {
             // Using gnutls's certtool instead of OpenSSL, because it allows setting start date to 1970
-            _execCheckResult("certtool --generate-privkey --ecc --outfile /etc/ldap/piserver.key");
+            _execCheckResult("certtool --generate-privkey --ecc --outfile /etc/ldap/efserver.key");
             ofstream os("/etc/ldap/piserver.tpl");
             os << "cn = \"piserver\"" << endl
                << "tls_www_server" << endl
                << "activation_date=\"1970-01-01 00:00:00 UTC\"" << endl
                << "expiration_days=\"-1\"" << endl;
             os.close();
-            _execCheckResult("certtool --generate-self-signed --load-privkey /etc/ldap/piserver.key --template=/etc/ldap/piserver.tpl --outfile=/etc/ssl/certs/piserver.pem");
-            _execCheckResult("chown openldap /etc/ldap/piserver.key");
+            _execCheckResult("certtool --generate-self-signed --load-privkey /etc/ldap/efserver.key --template=/etc/ldap/efserver.tpl --outfile=/etc/ssl/certs/efserver.pem");
+            _execCheckResult("chown openldap /etc/ldap/efserver.key");
             if (::unlink("/etc/ldap/piserver.tpl") != 0) { }
 
             const char *ldif =
                     "dn: cn=config\n"
                     "changetype: modify\n"
                     "replace: olcTLSCertificateFile\n"
-                    "olcTLSCertificateFile: /etc/ssl/certs/piserver.pem\n"
+                    "olcTLSCertificateFile: /etc/ssl/certs/efserver.pem\n"
                     "-\n"
                     "replace: olcTLSCACertificateFile\n"
-                    "olcTLSCACertificateFile: /etc/ssl/certs/piserver.pem\n"
+                    "olcTLSCACertificateFile: /etc/ssl/certs/efserver.pem\n"
                     "-\n"
                     "replace: olcTLSCertificateKeyFile\n"
-                    "olcTLSCertificateKeyFile: /etc/ldap/piserver.key\n";
+                    "olcTLSCertificateKeyFile: /etc/ldap/efserver.key\n";
             FILE *f = popen("ldapmodify -Y EXTERNAL -H ldapi:///", "w");
             fwrite(ldif, strlen(ldif), 1, f);
             pclose(f);
@@ -163,10 +163,10 @@ void DependenciesInstallThread::run()
             _execCheckResult("systemctl restart nslcd");
         }
 
-        _execCheckResult("systemctl start piserver_ssh");
-        _execCheckResult("systemctl enable piserver_ssh");
+        _execCheckResult("systemctl start efserver_ssh");
+        _execCheckResult("systemctl enable efserver_ssh");
         _execCheckResult("systemctl enable rpcbind");
-        _ps->addToExports(PISERVER_DISTROROOT " *(ro,no_subtree_check,no_root_squash,fsid=1055)");
+        _ps->addToExports(EFSERVER_DISTROROOT " *(ro,no_subtree_check,no_root_squash,fsid=1055)");
         _ps->regenDnsmasqConf();
 
         // On Debian Stretch it seems necessary to restart nscd before logging in with LDAP works
