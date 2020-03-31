@@ -4,7 +4,7 @@
 #include <gtkmm.h>
 #include <string>
 
-class PiServer;
+class EfServer;
 
 class AddFolderDialog
 {
@@ -14,7 +14,7 @@ public:
     bool exec();
 
 protected:
-    PiServer *_ps;
+    EfServer *_ps;
     Gtk::Dialog *_dialog;
     Gtk::Button *_okButton;
     Gtk::Entry *_nameEntry, *_ownerEntry;
