@@ -2,14 +2,14 @@
 #define MAINWINDOW_H
 
 #include <gtkmm.h>
-#include "piserver.h"
+#include "efserver.h"
 
 class DownloadThread;
 
 class MainWindow
 {
 public:
-    MainWindow(Glib::RefPtr<Gtk::Application> app, PiServer *ps);
+    MainWindow(Glib::RefPtr<Gtk::Application> app, EfServer *ps);
     virtual ~MainWindow();
     void exec();
 
@@ -34,7 +34,7 @@ protected:
     Gtk::Label *_softwarelabel;
     Glib::RefPtr<Gtk::ListStore> _distrostore, _hoststore, _userstore, _ethstore, _folderstore;
     DownloadThread *_dt;
-    PiServer *_ps;
+    EfServer *_ps;
     std::string _cachedDistroInfo;
 
     bool _validIP(const std::string &s);
